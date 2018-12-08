@@ -3,6 +3,9 @@
 
 #include <Arduino.h>
 
+const byte NUM_BANKS = 4;
+const byte OUTPUT_PINS_PER_BUTTON = 3;
+const byte NUM_BUTTONS = 3;
 
 //***********************************************************************
 class Mux
@@ -17,12 +20,15 @@ class Mux
 //Button (Pin Number, Command, Note Number, Channel, Debounce Time)
 class Button
 {
-  public:
+  public: 
     Button(byte pin, byte command, byte value, byte channel, byte debounce);
     Button(Mux mux, byte muxpin, byte command, byte value, byte channel, byte debounce);
     byte getValue();
     void muxUpdate();
     void newValue(byte command, byte value, byte channel);
+    byte getBankBtnStatus(byte bank);
+    void setBankBtnStatus(byte bank, byte onOff);
+    void init();
     byte Bcommand;
     byte Bvalue;
     byte Bchannel;
@@ -32,6 +38,8 @@ class Button
     byte Btoggle3;
     byte Btoggle4;
     byte Bpin;
+    byte BbankBtnStatus[NUM_BANKS];
+    byte BcolourPins[OUTPUT_PINS_PER_BUTTON*NUM_BUTTONS];
 
   private:
     byte _previous;
@@ -48,6 +56,7 @@ class Button
     byte _enablepin;
     byte _pin;
 };
+
 //*************************************************************************
 class Pot
 {

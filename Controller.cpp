@@ -37,6 +37,8 @@ Button::Button(byte pin, byte command, byte value, byte channel, byte debounce)
   Btoggle2 = 0;
   Btoggle3 = 0;
   Btoggle4 = 0;
+  BbankBtnStatus;
+  BcolourPins;
 }
 
 Button::Button(Mux mux, byte muxpin, byte command, byte value, byte channel, byte debounce)
@@ -55,6 +57,24 @@ Button::Button(Mux mux, byte muxpin, byte command, byte value, byte channel, byt
   Bvalue = value;
   Bchannel = channel;
   Btoggle = 0;
+}
+
+void Button::init(byte pin1, byte pin2, byte pin3){
+  //Initialise an array setting all banks status to off. Val one is onOff, Val two is colour  
+  for (byte i=0; i < NUM_BANKS; i++){
+    BbankBtnStatus[i] = 0;
+  }
+  for (byte i=0; i < OUTPUT_PINS_PER_BUTTON*NUM_BUTTONS; i++){
+    BcolourPins[i]   
+  }
+}
+
+void Button::setBankBtnStatus(byte bank, byte onOff){
+  BbankBtnStatus[bank-1] = onOff;     
+}
+
+byte Button::getBankBtnStatus(byte bank){
+  return BbankBtnStatus[bank-1];  
 }
 
 void Button::muxUpdate()
@@ -167,5 +187,3 @@ void Pot::newValue(byte command, byte value, byte channel) {
   Pchannel = channel;
 }
 //********************************************************************
-
-
