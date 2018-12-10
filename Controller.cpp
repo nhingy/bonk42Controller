@@ -32,11 +32,6 @@ Button::Button(byte pin, byte command, byte value, byte channel, byte debounce)
   Bcommand = command;
   Bvalue = value;
   Bchannel = channel;
-  Btoggle = 1; 
-  Btoggle1 = 0; //toggle values for each bank
-  Btoggle2 = 0;
-  Btoggle3 = 0;
-  Btoggle4 = 0;
   BbankBtnStatus;
   BcolourPins;
 }
@@ -56,25 +51,64 @@ Button::Button(Mux mux, byte muxpin, byte command, byte value, byte channel, byt
   Bcommand = command;
   Bvalue = value;
   Bchannel = channel;
-  Btoggle = 0;
 }
 
-void Button::init(byte pin1, byte pin2, byte pin3){
+void Button::init(){
   //Initialise an array setting all banks status to off. Val one is onOff, Val two is colour  
   for (byte i=0; i < NUM_BANKS; i++){
-    BbankBtnStatus[i] = 0;
+    if (Bcommand == BANK_CHANGE){
+      BbankBtnStatus[i] = 1; 
+    } else {
+      BbankBtnStatus[i] = 0;
+    }
   }
-  for (byte i=0; i < OUTPUT_PINS_PER_BUTTON*NUM_BUTTONS; i++){
-    BcolourPins[i]   
+  for (int i=0; i < (NUM_COLOURS*OUTPUT_PINS_PER_BUTTON); i++){
+    BcolourPins[i] = 0;
   }
+}
+
+void Button::setLedPins(int colour, int pin1, int pin2, int pin3){
+  int arrayOffset = colour * OUTPUT_PINS_PER_BUTTON - OUTPUT_PINS_PER_BUTTON; 
+  BcolourPins[arrayOffset] = pin1;
+  BcolourPins[arrayOffset+1] = pin2;
+  BcolourPins[arrayOffset+2] = pin3;
 }
 
 void Button::setBankBtnStatus(byte bank, byte onOff){
-  BbankBtnStatus[bank-1] = onOff;     
+  this->BbankBtnStatus[bank-1] = onOff;     
 }
 
 byte Button::getBankBtnStatus(byte bank){
   return BbankBtnStatus[bank-1];  
+}
+
+void Button::printState(){
+  Serial.write("------------------------\n");
+  Serial.write("Bpin:");
+  Serial.print(Bpin);
+  Serial.write("|");
+  Serial.write("Bcommand:");
+  Serial.print(Bcommand);
+  Serial.write("|");
+  Serial.write("Bvalue:");
+  Serial.print(Bvalue);
+  Serial.write("|");
+  Serial.write("Bchannel:");
+  Serial.print(Bchannel);
+  Serial.write("\n");
+  Serial.write("BbankBtnStatus {");
+  for (byte i=0; i<NUM_BANKS; i++){
+    Serial.print(BbankBtnStatus[i]);
+    Serial.write("|");  
+  }
+  Serial.write("}");
+  Serial.write("\n");
+  Serial.write("BcolourPins {");
+  for (byte i=0; i<OUTPUT_PINS_PER_BUTTON*NUM_COLOURS; i++){
+    Serial.print(BcolourPins[i]);
+    Serial.write("|");  
+  }
+  Serial.write("}\n------------------------\n"); 
 }
 
 void Button::muxUpdate()

@@ -4,8 +4,10 @@
 #include <Arduino.h>
 
 const byte NUM_BANKS = 4;
-const byte OUTPUT_PINS_PER_BUTTON = 3;
+const int OUTPUT_PINS_PER_BUTTON = 3;
+const int NUM_COLOURS = 4;
 const byte NUM_BUTTONS = 3;
+const byte BANK_CHANGE = 3;
 
 //***********************************************************************
 class Mux
@@ -28,19 +30,16 @@ class Button
     void newValue(byte command, byte value, byte channel);
     byte getBankBtnStatus(byte bank);
     void setBankBtnStatus(byte bank, byte onOff);
+    void setLedPins(int colour, int pin1, int pin2, int pin3);
+    void printState();
     void init();
     byte Bcommand;
     byte Bvalue;
     byte Bchannel;
-    byte Btoggle;
-    byte Btoggle1;
-    byte Btoggle2;
-    byte Btoggle3;
-    byte Btoggle4;
     byte Bpin;
     byte BbankBtnStatus[NUM_BANKS];
-    byte BcolourPins[OUTPUT_PINS_PER_BUTTON*NUM_BUTTONS];
-
+    int BcolourPins[OUTPUT_PINS_PER_BUTTON*NUM_COLOURS];
+    
   private:
     byte _previous;
     byte _current;
