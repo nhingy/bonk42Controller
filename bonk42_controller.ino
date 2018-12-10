@@ -58,7 +58,7 @@ void setup() {
     BUTTONS[i]->setLedPins(BLUE, BUTTON_LED_PINS[i][2], NO_PIN, NO_PIN); //Sets Blue LED pins for button
     BUTTONS[i]->setLedPins(PURPLE, BUTTON_LED_PINS[i][0], BUTTON_LED_PINS[i][2], NO_PIN); //Sets Purple LED pins for button
   }  
-  debug();
+//debug();
   lightUp();
 }
 
@@ -80,12 +80,19 @@ void lightUp(){
     } else {
       switchLed(BUTTONS[i], false);  
     }  
-  }
-         
+  }        
 }
 
+byte getNextBank(){
+  if(bank == NUM_BANKS){
+    return 1; 
+  } else {
+    return (bank+1); 
+  }      
+}
+
+//--------------------------------------------
 void updateButtons() {
-  // Cycle through Button array
   for (int i=0; i<NUM_BUTTONS; i++){
     byte message = BUTTONS[i]->getValue();
     if (message == 0) {
@@ -107,7 +114,6 @@ void updatePots() {
 }
 
 void handleButtonPress(Button* button){
-  // Checks what sort of button it is by looking at the command variable..
   switch (button->Bcommand){ 
     case NOTE: 
       MIDI.sendNoteOn(button->Bvalue, 127, button->Bchannel);
@@ -160,14 +166,6 @@ void handleButtonNotPressed(Button* button){
   }
 }
 
-byte getNextBank(){
-  if(bank == NUM_BANKS){
-    return 1; 
-  } else {
-    return (bank+1); 
-  }      
-}
-
 void switchLed(Button* button, bool switchingOn){
   int activeClrStartIndex = (bank * OUTPUT_PINS_PER_BUTTON - OUTPUT_PINS_PER_BUTTON);
   int activeClrEndIndex = (bank * OUTPUT_PINS_PER_BUTTON-1);
@@ -189,6 +187,10 @@ void switchLed(Button* button, bool switchingOn){
   }
 }
 
+void writeLedPin(int pin, byte val){
+    analogWrite(pin, val);
+}
+
 bool pinAlreadySwitched(int val, int switchedList[]){
   for(int i=0; i<OUTPUT_PINS_PER_BUTTON; i++){
     if(val == switchedList[i]){
@@ -196,10 +198,6 @@ bool pinAlreadySwitched(int val, int switchedList[]){
     }    
   } 
   return false;    
-}
-
-void writeLedPin(int pin, byte val){
-    analogWrite(pin, val);
 }
 
 bool isRealPin(int pinNumber){
